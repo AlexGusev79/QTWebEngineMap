@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+	<head lang="en">
+		<meta charset="UTF-8">
+		<meta name="x-frame-options" content="allowall" />
+		<title>Программа для проверки ВС</title>
+		<style>
+			iframe {
+				width: 100%;
+				height: 1000px;
+				margin: 3px;
+				border: none;
+			}
+			#header {
+				width: 100%;
+				height: 250px;
+				font-size: 12px;
+				border: 1px solid #ddd;
+				overflow: auto;
+				padding: 2px;
+			}
+			#header table {
+				border: 1px solid #ddd;
+			}
+			#header table tr {
+				border: 1px solid #ddd;
+			}
+			#header table td {
+				border-left: 1px solid #ddd;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="header">
+			<button type="button" onclick="BackgroundImageryProvider()">
+				BackgroundImageryProvider
+			</button>
+			<button type="button" onclick="DatFileProvider()">
+				DatFileProvider
+			</button>
+			<table id="log"></table>
+		</div>
+		<iframe name="vseuz" src="http://127.0.0.1:8000">
+		</iframe>
+	</body>
+	<script>
+
+
+		function BackgroundImageryProvider() {
+			window.frames.vseuz.postMessage({
+				actionType: 'BackgroundImageryProvider',
+				url: 'http://172.16.1.145:80/proxy/service?',
+				fileExtension: 'png',
+				maximumLevel: 6
+			}, '*');
+		}
+
+		function DatFileProvider() {
+			window.frames.vseuz.postMessage({
+				actionType: 'DatFileProvider',
+				fileExtension: 'dat'
+			}, '*');
+		}
+
+
+		window.addEventListener('message', function(event) {
+			var msgData = JSON.stringify(event.data);
+
+			var origin = event.origin;
+
+			var logMsg = [
+				'<tr>',
+				'<td>' + msgData + '</td>',
+				'<td>' + origin  + '</td>',
+				'</tr>'
+			].join('');
+
+		});
+	</script>
+</html>
