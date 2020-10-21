@@ -7,43 +7,69 @@
 		<style>
 			iframe {
 				width: 100%;
-				height: 1000px;
-				margin: 3px;
+				height: 800px;
+				margin: 1px;
 				border: none;
 			}
-			#header {
-				width: 100%;
-				height: 250px;
-				font-size: 12px;
-				border: 1px solid #ddd;
-				overflow: auto;
-				padding: 2px;
-			}
-			#header table {
-				border: 1px solid #ddd;
-			}
-			#header table tr {
-				border: 1px solid #ddd;
-			}
-			#header table td {
-				border-left: 1px solid #ddd;
-			}
+			
 		</style>
 	</head>
 	<body>
-		<div id="header">
-			<button type="button" onclick="BackgroundImageryProvider()">
-				BackgroundImageryProvider
-			</button>
-			<button type="button" onclick="DatFileProvider()">
-				DatFileProvider
-			</button>
-			<table id="log"></table>
-		</div>
 		<iframe name="vseuz" src="http://127.0.0.1:8000">
 		</iframe>
+		
+        <script src="qwebchannel.js"></script>
+
 	</body>
 	<script>
+        var mchannel;
+        window.onload=function(){
+
+            if (typeof qt != 'undefined')
+            {
+                new QWebChannel(qt.webChannelTransport, function(channel)
+                {
+                    channel.objects.qtChannel.cityChanged.connect(testSetCity);
+                    channel.objects.qtChannel.inputChanged.connect(dealComplete);
+                    mchannel=channel;
+                    getCurCity();
+                }
+                );
+            }
+            else
+            {
+                alert("qt对象获取失败！");
+            }
+
+        }
+        function getCurCity()
+        {
+            map.getCity(function(place){
+                if(place.city=="")
+                {
+                    autoComplete.setCity(place.province);
+                    mchannel.objects.qtChannel.cityChangeResult(place.province);
+                }else{
+                    autoComplete.setCity(place.city);
+                    mchannel.objects.qtChannel.cityChangeResult(place.city);
+                }
+                });
+        }
+        function testSetCity(city)
+        {
+            alert("Сообщение из QT " + city);
+            //getCurCity();
+        }
+ 
+        function dealComplete(cont)
+        {
+            console.log(cont);
+            autoComplete.search(cont, function(status, result) {
+            mchannel.objects.qtChannel.getAutocomplete(JSON.stringify(result));
+            console.log(result);
+            mchannel.objects.qtChannel.getAutocomplete(result);
+            })
+        }
 
 
 		function BackgroundImageryProvider() {
