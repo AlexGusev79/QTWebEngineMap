@@ -4,6 +4,8 @@
 #include <iostream>
 
 #include <QWebEngineView>
+#include <QWebEngineSettings>
+
 #include <QWebChannel>
 #include <QMessageBox>
 #include <QJsonObject>
@@ -23,6 +25,8 @@ MainWindow::MainWindow(QWidget *parent) :
     QWebChannel* web_channel = new QWebChannel(this);
     web_channel->registerObject("qtChannel",_myChannel);
     ui->webengineview->page()->setWebChannel(web_channel);
+    ui->webengineview->page()->settings()->setAttribute(QWebEngineSettings::Accelerated2dCanvasEnabled, true);
+
     ui->webengineview->load(QUrl("qrc:/smap/mymap_ba.html"));
     ui->listView->setModel(_mItemModel);
 
